@@ -10,8 +10,7 @@ export const event = pgTable('event', {
 	status: text('status', { enum: ['scheduled', 'planning', 'done'] })
 		.notNull()
 		.default('scheduled'),
-	date: date('date').notNull().defaultNow(),
-	time: timestamp('time', { withTimezone: true }).notNull().defaultNow(),
+	datetime: timestamp('datetime', { withTimezone: true }).notNull().defaultNow(),
 	location: text('location').notNull().default('None'),
 	numberOfParticipants: integer('number_of_participants').notNull().default(0),
 	price: numeric({ precision: 2 }).notNull().default('0')
