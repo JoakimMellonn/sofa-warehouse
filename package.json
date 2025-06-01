@@ -17,13 +17,16 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"devDependencies": {
+		"@internationalized/date": "^3.5.6",
 		"@lucide/svelte": "^0.511.0",
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/adapter-node": "^5.2.12",
+		"@sveltejs/enhanced-img": "^0.6.0",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/node": "^20",
+		"bits-ui": "^2.4.0",
 		"clsx": "^2.1.1",
 		"drizzle-kit": "^0.30.2",
 		"prettier": "^3.4.2",
