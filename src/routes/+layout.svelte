@@ -9,6 +9,7 @@
 	class="flex items-center justify-between border-b border-solid border-b-[#f0f2f5] px-10 py-3 whitespace-nowrap"
 >
 	<div class="flex items-center gap-4 text-[#111418]">
+		<!-- TODO: add link	 -->
 		<div class="w-16">
 			<enhanced:img img src="$lib/assets/sofa-logo.png" alt="SOFA Logo" />
 		</div>
