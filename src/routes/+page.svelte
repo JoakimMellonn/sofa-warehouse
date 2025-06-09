@@ -55,7 +55,7 @@
 					Sales & Stock summary
 				</h3>
 
-				<div class="flex flex-wrap gap-4 p-4">
+				<div class="flex flex-wrap gap-4 py-4">
 					<Card.Root class="min-w-32 flex-1">
 						<Card.Header>
 							<Card.Title>Total Sales</Card.Title>

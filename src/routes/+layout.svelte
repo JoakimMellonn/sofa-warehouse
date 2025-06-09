@@ -11,7 +11,7 @@
 	<div class="flex items-center gap-4 text-[#111418]">
 		<!-- TODO: add link	 -->
 		<div class="w-16">
-			<enhanced:img img src="$lib/assets/sofa-logo.png" alt="SOFA Logo" />
+			<enhanced:img src="$lib/assets/sofa-logo.png" alt="SOFA Logo" />
 		</div>
 		<h2 class="text-lg leading-tight font-bold tracking-[-0.015em] text-[#111418]">
 			Event Warehouse
@@ -24,7 +24,7 @@
 					<NavigationMenu.Link href="/">Dashboard</NavigationMenu.Link>
 				</NavigationMenu.Item>
 				<NavigationMenu.Item>
-					<NavigationMenu.Link href="/">Events</NavigationMenu.Link>
+					<NavigationMenu.Link href="/events">Events</NavigationMenu.Link>
 				</NavigationMenu.Item>
 				<NavigationMenu.Item>
 					<NavigationMenu.Link href="/">Inventory</NavigationMenu.Link>
