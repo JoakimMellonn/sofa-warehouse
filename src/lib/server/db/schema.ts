@@ -65,6 +65,7 @@ export const ingredient = pgTable('ingredient', {
 		.default(sql`gen_random_uuid()`),
 	name: text('name').notNull(),
 	amount: integer('amount').notNull().default(0),
+	unit: text('unit').notNull().default('Bottle(s)'),
 	sizeML: integer('size_ml').notNull().default(0)
 });
 
