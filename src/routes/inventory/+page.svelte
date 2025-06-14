@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { SelectIngredient } from '$lib/server/db/schema';
 	import DataTable from './data-table.svelte';
-	import { columns } from './columns';
 
 	let ingredients: SelectIngredient[] = $state([
 		{
@@ -25,7 +24,7 @@
 	<div class="layout-container flex h-full grow flex-col">
 		<div class="flex flex-1 justify-center px-40 py-5">
 			<div class="layout-content-container flex max-w-[960px] flex-1 flex-col">
-				<DataTable data={ingredients} {columns} />
+				<DataTable data={ingredients} />
 			</div>
 		</div>
 	</div>
