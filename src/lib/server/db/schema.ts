@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { pgTable, integer, text, uuid, numeric, date, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, integer, text, uuid, numeric, timestamp } from 'drizzle-orm/pg-core';
 
 // Events
 export const event = pgTable('event', {
