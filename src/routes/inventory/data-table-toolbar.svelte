@@ -5,12 +5,12 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import DataTableViewOptions from './data-table-view-options.svelte';
 
-	let { table }: { table: Table<TData> } = $props();
+	let { table, addItem }: { table: Table<TData>; addItem: () => void } = $props();
 
 	const isFiltered = $derived(table.getState().columnFilters.length > 0);
 </script>
 
-<div class="flex items-center justify-between">
+<div class="flex items-center justify-between gap-2">
 	<div class="flex flex-1 items-center space-x-2">
 		<Input
 			placeholder="Filter tasks..."
@@ -32,4 +32,5 @@
 		{/if}
 	</div>
 	<DataTableViewOptions {table} />
+	<Button variant="default" class="h-8" onclick={addItem}>Add item</Button>
 </div>

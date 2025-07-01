@@ -40,7 +40,7 @@
 	import DataTableToolbar from './data-table-toolbar.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 
-	const { data }: { data: SelectIngredient[] } = $props();
+	const { data, addItem }: { data: SelectIngredient[]; addItem: () => void } = $props();
 
 	const columns: ColumnDef<SelectIngredient>[] = [
 		{
@@ -321,7 +321,7 @@
 {/snippet}
 
 <div class="space-y-4">
-	<DataTableToolbar {table} />
+	<DataTableToolbar {table} {addItem} />
 	<div class="rounded-md border">
 		<Table.Root>
 			<Table.Header>
