@@ -15,9 +15,10 @@
 	class="flex items-center justify-between border-b border-solid px-10 py-3 whitespace-nowrap"
 >
 	<div class="flex items-center gap-4">
-		<!-- TODO: add link	 -->
 		<div class="w-16">
-			<enhanced:img src="$lib/assets/sofa-logo.png" alt="SOFA Logo" />
+			<a href="/" aria-label="Go to homepage">
+				<enhanced:img src="$lib/assets/sofa-logo.png" alt="SOFA Logo" />
+			</a>
 		</div>
 		<h2 class=" text-lg leading-tight font-bold tracking-[-0.015em]">Event Warehouse</h2>
 	</div>
