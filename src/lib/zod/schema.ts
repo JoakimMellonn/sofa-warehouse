@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 
-export const addItemSchema = z.object({
+export const itemSchema = z.object({
+	id: z.string(),
 	name: z.string().min(1, 'You actually have to write something.'),
 	amount: z.number().min(0, "No, it can't be less than zero..."),
 	unit: z.string().min(1, 'You actually have to write something.'),

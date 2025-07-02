@@ -7,37 +7,53 @@
 	import { Button } from '$lib/components/ui/button';
 	import { superForm } from 'sveltekit-superforms';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { addItemSchema } from '$lib/zod/schema';
+	import { itemSchema } from '$lib/zod/schema';
 
 	let { data } = $props();
 	let ingredients: SelectIngredient[] = $state(data.ingredients);
 	const { form, enhance, constraints, errors } = superForm(data.form, {
-		validators: zod4Client(addItemSchema),
+		validators: zod4Client(itemSchema),
 		onResult: ({ result }) => {
 			if (result.type === 'success') {
-				addItemOpen = false;
+				dialogOpen = false;
+				selectedItem = undefined;
 				console.log(result.data!.form.message);
 				ingredients = result.data!.form.message;
 			}
 		}
 	});
-	let addItemOpen: boolean = $state(false);
+	let dialogOpen: boolean = $state(false);
+	let selectedItem: SelectIngredient | undefined = $state(undefined);
 
 	function addItem() {
-		addItemOpen = true;
+		dialogOpen = true;
+	}
+
+	function updateItem(item: SelectIngredient) {
+		selectedItem = item;
+		$form.id = item.id;
+		dialogOpen = true;
 	}
 </script>
 
-<DataTable data={ingredients} {addItem} />
+<DataTable data={ingredients} {addItem} {updateItem} />
 
-<Dialog.Root bind:open={addItemOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content class="sm:max-w-[425px]">
-		<form method="POST" use:enhance>
-			<Dialog.Header>
-				<Dialog.Title>Add item</Dialog.Title>
-				<Dialog.Description>Add a new item to the inventory.</Dialog.Description>
-			</Dialog.Header>
+		<form method="POST" action="?/{selectedItem ? 'updateItem' : 'addItem'}" use:enhance>
+			{#if selectedItem}
+				<Dialog.Header>
+					<Dialog.Title>Update item</Dialog.Title>
+					<Dialog.Description>Update an existing item in the inventory.</Dialog.Description>
+				</Dialog.Header>
+			{:else}
+				<Dialog.Header>
+					<Dialog.Title>Add item</Dialog.Title>
+					<Dialog.Description>Add a new item to the inventory.</Dialog.Description>
+				</Dialog.Header>
+			{/if}
 			<div class="grid gap-4 py-4">
+				<input type="hidden" name="id" bind:value={$form.id} />
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="name" class="text-right">Name</Label>
 					<Input
@@ -99,7 +115,11 @@
 				</div>
 			</div>
 			<Dialog.Footer>
-				<Button type="submit">Add item</Button>
+				{#if selectedItem}
+					<Button type="submit">Update item</Button>
+				{:else}
+					<Button type="submit">Add item</Button>
+				{/if}
 			</Dialog.Footer>
 		</form>
 	</Dialog.Content>

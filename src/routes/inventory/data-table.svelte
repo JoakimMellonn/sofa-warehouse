@@ -39,8 +39,17 @@
 	import { cn } from '$lib/utils';
 	import DataTableToolbar from './data-table-toolbar.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { SquarePen } from '@lucide/svelte';
 
-	const { data, addItem }: { data: SelectIngredient[]; addItem: () => void } = $props();
+	const {
+		data,
+		addItem,
+		updateItem
+	}: {
+		data: SelectIngredient[];
+		addItem: () => void;
+		updateItem: (arg0: SelectIngredient) => void;
+	} = $props();
 
 	const columns: ColumnDef<SelectIngredient>[] = [
 		{
@@ -106,6 +115,18 @@
 			filterFn: (row, id, value) => {
 				return value.includes(row.getValue(id));
 			}
+		},
+		{
+			accessorKey: 'edit',
+			header: ({ column }) =>
+				renderSnippet(ColumnHeader, { column, title: 'Edit', class: 'block max-w-10' }),
+			cell: ({ row }) => {
+				return renderSnippet(EditCell, {
+					labelValue: row.original.id,
+					value: row.original.id
+				});
+			},
+			enableSorting: false
 		}
 	];
 
@@ -188,6 +209,15 @@
 		<div class="max-w-[500px] truncate font-medium">
 			<span>{ingredient.name}</span>
 		</div>
+	{/if}
+{/snippet}
+
+{#snippet EditCell({ value }: { value: string })}
+	{@const ingredient = data.find((ingredient) => ingredient.id === value)}
+	{#if ingredient}
+		<Button variant="secondary" size="icon" class="size-8" onclick={() => updateItem(ingredient)}>
+			<SquarePen />
+		</Button>
 	{/if}
 {/snippet}
 

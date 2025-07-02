@@ -1,5 +1,5 @@
-import { ingredient, type InsertIngredient, type SelectIngredient } from '$lib/server/db/schema';
-import { addItemSchema } from '$lib/zod/schema';
+import { ingredient, type InsertIngredient } from '$lib/server/db/schema';
+import { itemSchema } from '$lib/zod/schema';
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
@@ -7,7 +7,7 @@ import { db } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({}) => {
-	const form = await superValidate(zod4(addItemSchema));
+	const form = await superValidate(zod4(itemSchema));
 
 	const ingredients = await db.select().from(ingredient);
 
@@ -20,8 +20,8 @@ export const load: PageServerLoad = async ({}) => {
 };
 
 export const actions = {
-	default: async ({ request }) => {
-		const form = await superValidate(request, zod4(addItemSchema));
+	addItem: async ({ request }) => {
+		const form = await superValidate(request, zod4(itemSchema));
 
 		if (!form.valid) {
 			console.log(form.errors);
@@ -57,6 +57,37 @@ export const actions = {
 		};
 		console.log('inserting ingredient');
 		await db.insert(ingredient).values(newIngredient);
+		const ingredients = await db.select().from(ingredient);
+
+		return message(form, ingredients);
+	},
+	updateItem: async ({ request }) => {
+		const form = await superValidate(request, zod4(itemSchema));
+
+		if (!form.valid) {
+			console.log(form.errors);
+			return fail(400, { form });
+		}
+
+		const existingIngredients = await db
+			.select()
+			.from(ingredient)
+			.where(eq(ingredient.name, form.data.name));
+
+		if (existingIngredients.length != 0) {
+			setError(form, 'name', "Can't have multiple items with same name");
+			return fail(400, { form });
+		}
+
+		await db
+			.update(ingredient)
+			.set({
+				name: form.data.name,
+				amount: form.data.amount,
+				unit: form.data.unit,
+				sizeML: form.data.sizeML
+			})
+			.where(eq(ingredient.id, form.data.id));
 		const ingredients = await db.select().from(ingredient);
 
 		return message(form, ingredients);
