@@ -10,15 +10,17 @@
 	import { addItemSchema } from '$lib/zod/schema';
 
 	let { data } = $props();
+	let ingredients: SelectIngredient[] = $state(data.ingredients);
 	const { form, enhance, constraints, errors } = superForm(data.form, {
 		validators: zod4Client(addItemSchema),
 		onResult: ({ result }) => {
 			if (result.type === 'success') {
 				addItemOpen = false;
+				console.log(result.data!.form.message);
+				ingredients = result.data!.form.message;
 			}
 		}
 	});
-	let ingredients: SelectIngredient[] = data.ingredients;
 	let addItemOpen: boolean = $state(false);
 
 	function addItem() {

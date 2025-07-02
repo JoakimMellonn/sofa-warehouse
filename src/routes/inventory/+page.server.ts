@@ -9,22 +9,9 @@ import { eq } from 'drizzle-orm';
 export const load: PageServerLoad = async ({}) => {
 	const form = await superValidate(zod4(addItemSchema));
 
-	let ingredients: SelectIngredient[] = [
-		{
-			id: 'ceres',
-			name: 'Ceres Top',
-			amount: 69,
-			unit: 'Bottle(s)',
-			sizeML: 330
-		},
-		{
-			id: 'royal',
-			name: 'Royal Classic',
-			amount: 420,
-			unit: 'Bottle(s)',
-			sizeML: 330
-		}
-	];
+	const ingredients = await db.select().from(ingredient);
+
+	form.data.unit = 'Bottle(s)';
 
 	return {
 		form: form,
@@ -53,8 +40,9 @@ export const actions = {
 					.update(ingredient)
 					.set({ amount: existingIngredient.amount + form.data.amount })
 					.where(eq(ingredient.id, existingIngredient.id));
+				const ingredients = await db.select().from(ingredient);
 
-				return message(form, 'ingredient updated');
+				return message(form, ingredients);
 			} else {
 				setError(form, 'name', "Can't have multiple items with same name");
 				return fail(400, { form });
@@ -67,8 +55,10 @@ export const actions = {
 			unit: form.data.unit,
 			sizeML: form.data.sizeML
 		};
-		db.insert(ingredient).values(newIngredient);
+		console.log('inserting ingredient');
+		await db.insert(ingredient).values(newIngredient);
+		const ingredients = await db.select().from(ingredient);
 
-		return message(form, 'ingredient added');
+		return message(form, ingredients);
 	}
 } satisfies Actions;
