@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { SelectIngredient } from '$lib/server/db/schema';
-	import type { PageProps } from './$types';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -10,9 +9,14 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addItemSchema } from '$lib/zod/schema';
 
-	let { data }: PageProps = $props();
-	const { form, enhance, constraints } = superForm(data.form, {
-		validators: zod4Client(addItemSchema)
+	let { data } = $props();
+	const { form, enhance, constraints, errors } = superForm(data.form, {
+		validators: zod4Client(addItemSchema),
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
+				addItemOpen = false;
+			}
+		}
 	});
 	let ingredients: SelectIngredient[] = data.ingredients;
 	let addItemOpen: boolean = $state(false);
@@ -36,6 +40,7 @@
 					<Label for="name" class="text-right">Name</Label>
 					<Input
 						id="name"
+						name="name"
 						type="text"
 						placeholder="Name"
 						class="col-span-3"
@@ -43,39 +48,52 @@
 						{...constraints}
 						bind:value={$form.name}
 					/>
+					{#if $errors.name}<span class="text-danger col-span-3 col-start-2">{$errors.name}</span
+						>{/if}
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="amount" class="text-right">Amount</Label>
 					<Input
 						id="amount"
+						name="amount"
 						type="number"
 						placeholder="0"
 						class="col-span-3"
 						{...constraints}
 						bind:value={$form.amount}
 					/>
+					{#if $errors.amount}<span class="text-danger col-span-3 col-start-2"
+							>{$errors.amount}</span
+						>{/if}
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="unit" class="text-right">Unit</Label>
 					<Input
 						id="unit"
+						name="unit"
 						type="text"
 						placeholder="Bottle(s)"
 						class="col-span-3"
 						{...constraints}
 						bind:value={$form.unit}
 					/>
+					{#if $errors.unit}<span class="text-danger col-span-3 col-start-2">{$errors.unit}</span
+						>{/if}
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="sizeML" class="text-right">Size (ml)</Label>
 					<Input
 						id="sizeML"
+						name="sizeML"
 						type="number"
 						placeholder="0"
 						class="col-span-3"
 						{...constraints}
 						bind:value={$form.sizeML}
 					/>
+					{#if $errors.sizeML}<span class="text-danger col-span-3 col-start-2"
+							>{$errors.sizeML}</span
+						>{/if}
 				</div>
 			</div>
 			<Dialog.Footer>
