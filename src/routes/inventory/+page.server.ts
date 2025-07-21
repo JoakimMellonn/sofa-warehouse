@@ -69,16 +69,6 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		const existingIngredients = await db
-			.select()
-			.from(ingredient)
-			.where(eq(ingredient.name, form.data.name));
-
-		if (existingIngredients.length != 0) {
-			setError(form, 'name', "Can't have multiple items with same name");
-			return fail(400, { form });
-		}
-
 		await db
 			.update(ingredient)
 			.set({

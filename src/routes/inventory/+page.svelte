@@ -26,17 +26,35 @@
 	let selectedItem: SelectIngredient | undefined = $state(undefined);
 
 	function addItem() {
+		$form.id = '';
+		$form.name = '';
+		$form.amount = 0;
+		$form.unit = '';
+		$form.sizeML = 0;
 		dialogOpen = true;
 	}
 
 	function updateItem(item: SelectIngredient) {
 		selectedItem = item;
 		$form.id = item.id;
+		$form.name = item.name;
+		$form.amount = item.amount;
+		$form.unit = item.unit;
+		$form.sizeML = item.sizeML;
 		dialogOpen = true;
+	}
+
+	async function updateTable() {
+		try {
+			const data = await fetch('/api/items');
+			ingredients = (await data.json()).ingredients;
+		} catch (error) {
+			console.log(error);
+		}
 	}
 </script>
 
-<DataTable data={ingredients} {addItem} {updateItem} />
+<DataTable data={ingredients} {addItem} {updateItem} {updateTable} />
 
 <Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content class="sm:max-w-[425px]">

@@ -1,37 +1,47 @@
 <script lang="ts" generics="TData">
-	import Settings2Icon from '@lucide/svelte/icons/settings-2';
 	import type { Table } from '@tanstack/table-core';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { Trash2 } from '@lucide/svelte';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
 
-	let { table }: { table: Table<TData> } = $props();
+	let { table, updateTable }: { table: Table<TData>; updateTable: () => Promise<void> } = $props();
+	let dialogOpen: boolean = $state(false);
+
+	async function removeSelectedItems() {
+		console.log(`${JSON.stringify(table.getSelectedRowModel().rows)}`);
+		try {
+			const result = await fetch('/api/items', {
+				method: 'DELETE',
+				body: JSON.stringify({ rows: table.getSelectedRowModel().rows })
+			});
+			console.log(result);
+		} catch (error) {
+			console.log(error);
+		}
+		await updateTable();
+		dialogOpen = false;
+	}
 </script>
 
-<DropdownMenu.Root>
-	<DropdownMenu.Trigger
-		class={buttonVariants({
-			variant: 'outline',
-			size: 'sm',
-			class: 'ml-auto hidden h-8 lg:flex'
-		})}
-	>
-		<Settings2Icon />
-		View
-	</DropdownMenu.Trigger>
-	<DropdownMenu.Content>
-		<DropdownMenu.Group>
-			<DropdownMenu.Label>Toggle columns</DropdownMenu.Label>
-			<DropdownMenu.Separator />
-			{#each table
-				.getAllColumns()
-				.filter((col) => typeof col.accessorFn !== 'undefined' && col.getCanHide()) as column (column)}
-				<DropdownMenu.CheckboxItem
-					bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)}
-					class="capitalize"
-				>
-					{column.id}
-				</DropdownMenu.CheckboxItem>
-			{/each}
-		</DropdownMenu.Group>
-	</DropdownMenu.Content>
-</DropdownMenu.Root>
+<Button
+	variant="outline"
+	class="h-8"
+	onclick={() => {
+		dialogOpen = true;
+	}}><Trash2 />Remove selected</Button
+>
+
+<Dialog.Root bind:open={dialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Are you sure sure?</Dialog.Title>
+			<Dialog.Description
+				>This will NOT delete the items, but it will set their amount value to 0.</Dialog.Description
+			>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (dialogOpen = false)}>Cancel</Button>
+			<Button variant="destructive" onclick={removeSelectedItems}>Yes, delete</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

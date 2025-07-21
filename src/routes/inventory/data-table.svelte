@@ -44,16 +44,19 @@
 	const {
 		data,
 		addItem,
-		updateItem
+		updateItem,
+		updateTable
 	}: {
 		data: SelectIngredient[];
 		addItem: () => void;
 		updateItem: (arg0: SelectIngredient) => void;
+		updateTable: () => Promise<void>;
 	} = $props();
 
 	const columns: ColumnDef<SelectIngredient>[] = [
 		{
 			id: 'select',
+			size: 10,
 			header: ({ table }) =>
 				renderComponent(Checkbox, {
 					checked: table.getIsAllPageRowsSelected(),
@@ -118,8 +121,9 @@
 		},
 		{
 			accessorKey: 'edit',
+			size: 40,
 			header: ({ column }) =>
-				renderSnippet(ColumnHeader, { column, title: 'Edit', class: 'block max-w-10' }),
+				renderSnippet(ColumnHeader, { column, title: 'Edit', class: 'text-right pr-2' }),
 			cell: ({ row }) => {
 				return renderSnippet(EditCell, {
 					labelValue: row.original.id,
@@ -215,7 +219,12 @@
 {#snippet EditCell({ value }: { value: string })}
 	{@const ingredient = data.find((ingredient) => ingredient.id === value)}
 	{#if ingredient}
-		<Button variant="secondary" size="icon" class="size-8" onclick={() => updateItem(ingredient)}>
+		<Button
+			variant="secondary"
+			size="icon"
+			class="float-end mr-1 size-8"
+			onclick={() => updateItem(ingredient)}
+		>
 			<SquarePen />
 		</Button>
 	{/if}
@@ -351,9 +360,15 @@
 {/snippet}
 
 <div class="space-y-4">
-	<DataTableToolbar {table} {addItem} />
+	<DataTableToolbar {table} {addItem} {updateTable} />
 	<div class="rounded-md border">
 		<Table.Root>
+			<colgroup>
+				{#each table.getAllColumns() as column (column.id)}
+					<col style={`width: ${column.getSize()}px;`} />
+				{/each}
+			</colgroup>
+
 			<Table.Header>
 				{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 					<Table.Row>
