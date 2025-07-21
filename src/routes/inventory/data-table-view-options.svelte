@@ -8,13 +8,11 @@
 	let dialogOpen: boolean = $state(false);
 
 	async function removeSelectedItems() {
-		console.log(`${JSON.stringify(table.getSelectedRowModel().rows)}`);
 		try {
-			const result = await fetch('/api/items', {
+			await fetch('/api/items', {
 				method: 'DELETE',
 				body: JSON.stringify({ rows: table.getSelectedRowModel().rows })
 			});
-			console.log(result);
 		} catch (error) {
 			console.log(error);
 		}
