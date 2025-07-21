@@ -19,6 +19,7 @@
 			console.log(error);
 		}
 		await updateTable();
+		table.resetRowSelection();
 		dialogOpen = false;
 	}
 </script>

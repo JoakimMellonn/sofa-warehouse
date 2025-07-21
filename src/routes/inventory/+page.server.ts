@@ -4,12 +4,24 @@ import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
+import { asc, eq, gt } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({}) => {
 	const form = await superValidate(zod4(itemSchema));
 
-	const ingredients = await db.select().from(ingredient);
+	let ingredients = await db
+		.select()
+		.from(ingredient)
+		.where(gt(ingredient.amount, 0))
+		.orderBy(asc(ingredient.name));
+	ingredients = [
+		...ingredients,
+		...(await db
+			.select()
+			.from(ingredient)
+			.where(eq(ingredient.amount, 0))
+			.orderBy(asc(ingredient.name)))
+	];
 
 	form.data.unit = 'Bottle(s)';
 
