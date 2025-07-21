@@ -3,5 +3,5 @@
 ## todo
 
 - [x] edit amount by clicking on amount (in inventory)
-- [ ] add selection options
+- [x] add selection options
 - [ ] add page for drinks
