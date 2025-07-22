@@ -29,7 +29,7 @@
 		$form.id = '';
 		$form.name = '';
 		$form.amount = 0;
-		$form.unit = '';
+		$form.unit = 'Bottle(s)';
 		$form.sizeML = 0;
 		dialogOpen = true;
 	}
