@@ -32,6 +32,9 @@
 					<NavigationMenu.Link href="/events">Events</NavigationMenu.Link>
 				</NavigationMenu.Item>
 				<NavigationMenu.Item>
+					<NavigationMenu.Link href="/drinks">Drinks</NavigationMenu.Link>
+				</NavigationMenu.Item>
+				<NavigationMenu.Item>
 					<NavigationMenu.Link href="/inventory">Inventory</NavigationMenu.Link>
 				</NavigationMenu.Item>
 			</NavigationMenu.List>
