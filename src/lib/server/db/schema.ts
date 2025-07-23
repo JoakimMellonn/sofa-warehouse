@@ -88,6 +88,8 @@ export const drinksToIngredientsRelations = relations(drinksToIngredients, ({ on
 
 export type SelectDrink = typeof drink.$inferSelect;
 export type InsertDrink = typeof drink.$inferInsert;
+export type SelectDrinksToIngredients = typeof drinksToIngredients.$inferSelect;
+export type InsertDrinksToIngredients = typeof drinksToIngredients.$inferInsert;
 
 export const ingredient = pgTable('ingredient', {
 	id: uuid('id')
