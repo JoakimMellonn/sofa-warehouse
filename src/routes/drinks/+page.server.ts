@@ -1,5 +1,5 @@
-import { superValidate } from 'sveltekit-superforms';
-import type { PageServerLoad } from './$types';
+import { fail, message, superValidate } from 'sveltekit-superforms';
+import type { Actions, PageServerLoad } from './$types';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Drink } from './drinks';
 import { drinkSchema } from '$lib/zod/schema';
@@ -18,3 +18,25 @@ export const load: PageServerLoad = async ({}) => {
 		ingredients: ingredients
 	};
 };
+
+export const actions = {
+	addDrink: async ({ request }) => {
+		console.log(request.body);
+
+		const form = await superValidate(request, zod4(drinkSchema));
+
+		if (!form.valid) {
+			console.log(form.errors);
+			return fail(400, { form });
+		}
+
+		console.log(form.data);
+
+		return message(form, '');
+	},
+	updateItem: async ({ request }) => {
+		const form = await superValidate(request, zod4(drinkSchema));
+
+		return message(form, '');
+	}
+} satisfies Actions;

@@ -8,13 +8,14 @@
 	import DataTable from './data-table.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { superForm } from 'sveltekit-superforms';
+	import { superForm, type FormPath } from 'sveltekit-superforms';
 	import { drinkSchema, type IngredientSchema } from '$lib/zod/schema';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { SelectIngredient } from '$lib/server/db/schema';
 	import { CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { tick } from 'svelte';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const ingredientTemplate: IngredientSchema = {
 		id: '',
@@ -23,8 +24,12 @@
 
 	let { data } = $props();
 	const allIngredients: SelectIngredient[] = data.ingredients;
-	const { form, enhance, constraints, errors } = superForm(data.form, {
+	const { form, enhance, constraints, errors, isTainted } = superForm(data.form, {
+		dataType: 'json',
 		validators: zod4Client(drinkSchema),
+		onSubmit: ({ customRequest }) => {
+			customRequest(postDrink);
+		},
 		onResult: ({ result }) => {
 			if (result.type === 'success') {
 				dialogOpen = false;
@@ -81,31 +86,43 @@
 		return ingredient?.name ?? '';
 	}
 
-	async function addItem() {
+	async function addDrink() {
 		ingredients = [{ ingredient: ingredientTemplate, open: false, triggerRef: null! }];
 		dialogOpen = true;
 	}
-	async function updateItem() {}
+
+	async function postDrink(input: Parameters<SubmitFunction>[0]): Promise<void> {
+		console.log(input.action);
+		let data = {
+			name: $form.name,
+			ingredients: ingredients
+		};
+
+		const response = await fetch(input.action, { method: 'POST', body: data });
+	}
+
+	async function updateDrink() {}
+
 	async function updateTable() {}
 </script>
 
 <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Drinks</h1>
 <p class="text-muted-foreground mt-3 mb-10 text-sm">See all the drinks and their ingredients</p>
 
-<DataTable data={drinks} {addItem} {updateItem} {updateTable} />
+<DataTable data={drinks} addItem={addDrink} updateItem={updateDrink} {updateTable} />
 
 <Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content class="sm:max-w-[425px]">
-		<form method="POST" action="?/{selectedItem ? 'updateItem' : 'addItem'}" use:enhance>
+		<form method="POST" action="?/{selectedItem ? 'updateDrink' : 'addDrink'}" use:enhance>
 			{#if selectedItem}
 				<Dialog.Header>
-					<Dialog.Title>Update item</Dialog.Title>
-					<Dialog.Description>Update an existing item in the inventory.</Dialog.Description>
+					<Dialog.Title>Update drink</Dialog.Title>
+					<Dialog.Description>Update an existing drink in the system.</Dialog.Description>
 				</Dialog.Header>
 			{:else}
 				<Dialog.Header>
-					<Dialog.Title>Add item</Dialog.Title>
-					<Dialog.Description>Add a new item to the inventory.</Dialog.Description>
+					<Dialog.Title>Add drink</Dialog.Title>
+					<Dialog.Description>Add a new drink to the system.</Dialog.Description>
 				</Dialog.Header>
 			{/if}
 			<div class="grid gap-4 py-4">
@@ -198,9 +215,9 @@
 			</div>
 			<Dialog.Footer>
 				{#if selectedItem}
-					<Button type="submit">Update item</Button>
+					<Button type="submit">Update drink</Button>
 				{:else}
-					<Button type="submit">Add item</Button>
+					<Button type="submit">Add drink</Button>
 				{/if}
 			</Dialog.Footer>
 		</form>
