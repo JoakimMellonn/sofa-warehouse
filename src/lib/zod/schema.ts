@@ -18,5 +18,5 @@ export type IngredientSchema = z.infer<typeof ingredientSchema>;
 export const drinkSchema = z.object({
 	id: z.string(),
 	name: z.string().min(1, 'You actually have to write something.'),
-	ingredients: z.array(ingredientSchema).min(1, 'Are you sure there is no ingredients?')
+	ingredients: z.array(ingredientSchema)
 });
