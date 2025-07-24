@@ -8,14 +8,13 @@
 	import DataTable from './data-table.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { superForm, type FormPath } from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';
 	import { drinkSchema, type IngredientSchema } from '$lib/zod/schema';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { SelectIngredient } from '$lib/server/db/schema';
 	import { CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { tick } from 'svelte';
-	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const ingredientTemplate: IngredientSchema = {
 		id: '',
@@ -24,18 +23,37 @@
 
 	let { data } = $props();
 	const allIngredients: SelectIngredient[] = data.ingredients;
-	const { form, enhance, constraints, errors, isTainted } = superForm(data.form, {
+	const { form, enhance, constraints, errors } = superForm(data.form, {
 		dataType: 'json',
 		validators: zod4Client(drinkSchema),
-		onSubmit: ({ customRequest }) => {
-			customRequest(postDrink);
+		onSubmit: ({ jsonData }) => {
+			console.log('hello');
+
+			const data = {
+				...$form,
+				ingredients: ingredients.map(({ ingredient }) => ingredient)
+			};
+			console.log(data);
+			try {
+				jsonData(data);
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		onError: ({ result }) => {
+			console.log('error');
+			console.log(result.error);
 		},
 		onResult: ({ result }) => {
+			console.log('result');
+			console.log(result);
 			if (result.type === 'success') {
 				dialogOpen = false;
 				selectedItem = undefined;
-				console.log(result.data!.form.message);
-				drinks = result.data!.form.message;
+			}
+
+			if (result.type === 'failure') {
+				// TODO: handle errors
 			}
 		}
 	});
@@ -45,7 +63,8 @@
 		ingredient: IngredientSchema;
 		open: boolean;
 		triggerRef: HTMLButtonElement;
-	}[] = $state([{ ingredient: ingredientTemplate, open: false, triggerRef: null! }]);
+		error: string;
+	}[] = $state([{ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' }]);
 
 	const ingredientOne: Ingredient = {
 		ingredient: {
@@ -78,7 +97,7 @@
 	let drinks: Drink[] = $state([someDrink]);
 
 	function addIngredient() {
-		ingredients.push({ ingredient: ingredientTemplate, open: false, triggerRef: null! });
+		ingredients.push({ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' });
 	}
 
 	function getIngredientName(id: string): string {
@@ -87,18 +106,8 @@
 	}
 
 	async function addDrink() {
-		ingredients = [{ ingredient: ingredientTemplate, open: false, triggerRef: null! }];
+		ingredients = [{ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' }];
 		dialogOpen = true;
-	}
-
-	async function postDrink(input: Parameters<SubmitFunction>[0]): Promise<void> {
-		console.log(input.action);
-		let data = {
-			name: $form.name,
-			ingredients: ingredients
-		};
-
-		const response = await fetch(input.action, { method: 'POST', body: data });
 	}
 
 	async function updateDrink() {}
@@ -211,6 +220,11 @@
 					<Button class="col-span-2 col-start-2" variant="outline" onclick={addIngredient}
 						>Add another ingredient</Button
 					>
+				</div>
+				<div>
+					{#if $errors.ingredients}
+						<span class="text-danger col-span-3 col-start-2">{$errors.ingredients.amountMl}</span>
+					{/if}
 				</div>
 			</div>
 			<Dialog.Footer>
