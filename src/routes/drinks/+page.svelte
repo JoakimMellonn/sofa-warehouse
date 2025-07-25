@@ -12,7 +12,7 @@
 	import { drinkSchema, type IngredientSchema } from '$lib/zod/schema';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { SelectIngredient } from '$lib/server/db/schema';
-	import { CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
+	import { CheckIcon, ChevronsUpDownIcon, Trash2 } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { tick } from 'svelte';
 
@@ -78,6 +78,10 @@
 		});
 	}
 
+	function removeIngredient(index: number) {
+		ingredients.splice(index, 1);
+	}
+
 	function getIngredientName(id: string): string {
 		const ingredient = allIngredients.find((ingr) => ingr.id === id);
 		return ingredient?.name ?? '';
@@ -99,7 +103,7 @@
 		}
 	}
 
-	async function addDrink() {
+	function addDrink() {
 		ingredients = [{ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' }];
 		dialogOpen = true;
 	}
@@ -115,7 +119,7 @@
 <DataTable data={drinks} addItem={addDrink} updateItem={updateDrink} {updateTable} />
 
 <Dialog.Root bind:open={dialogOpen}>
-	<Dialog.Content class="sm:max-w-[425px]">
+	<Dialog.Content class="sm:max-w-[600px]">
 		<form method="POST" action="?/{selectedItem ? 'updateDrink' : 'addDrink'}" use:enhance>
 			{#if selectedItem}
 				<Dialog.Header>
@@ -150,7 +154,7 @@
 				</div>
 				<Separator />
 				{#each ingredients as ingredient}
-					<div class="grid grid-cols-6 items-center gap-4">
+					<div class="grid grid-cols-7 items-center gap-4">
 						<div class="col-span-4">
 							<Label for="id" class="mb-2 text-right">Ingredient</Label>
 							<Popover.Root bind:open={ingredient.open}>
@@ -210,6 +214,18 @@
 								autocomplete="off"
 								bind:value={ingredient.ingredient.amountML}
 							/>
+						</div>
+						<div class="col-span-1 col-start-7">
+							<Button
+								variant="secondary"
+								size="icon"
+								class="size-9 translate-y-2.5"
+								onclick={() => {
+									removeIngredient(ingredients.indexOf(ingredient));
+								}}
+							>
+								<Trash2 />
+							</Button>
 						</div>
 					</div>
 					<div class="-m-2 text-center">

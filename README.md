@@ -8,7 +8,7 @@
   - [ ] get drinks from db
   - [x] handle errors
   - [ ] edit drinks
-  - [ ] remove ingredient when adding
+  - [x] remove ingredient when adding
   - [ ] remove ingredient when editing
 - [ ] fix cross origin
 - [ ] add authentication
