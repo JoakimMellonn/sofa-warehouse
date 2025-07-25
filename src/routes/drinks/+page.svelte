@@ -23,6 +23,8 @@
 
 	let { data } = $props();
 	const allIngredients: SelectIngredient[] = data.ingredients;
+	let drinks: Drink[] = $state(data.drinks);
+
 	const { form, enhance, constraints, errors } = superForm(data.form, {
 		dataType: 'json',
 		validators: zod4Client(drinkSchema),
@@ -53,7 +55,7 @@
 			}
 
 			if (result.type === 'failure') {
-				// TODO: handle errors
+				getErrors();
 			}
 		}
 	});
@@ -65,44 +67,36 @@
 		triggerRef: HTMLButtonElement;
 		error: string;
 	}[] = $state([{ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' }]);
-
-	const ingredientOne: Ingredient = {
-		ingredient: {
-			id: '1',
-			name: 'Some ingredient',
-			amount: 20,
-			unit: 'Bottle(s)',
-			sizeML: 100
-		},
-		amountMl: 100
-	};
-	const ingredientTwo: Ingredient = {
-		ingredient: {
-			id: '2',
-			name: 'Another ingredient',
-			amount: 30,
-			unit: 'Bottle(s)',
-			sizeML: 200
-		},
-		amountMl: 200
-	};
-	const someDrink: Drink = {
-		drink: {
-			name: 'Some drink',
-			id: '1'
-		},
-		ingredients: [ingredientOne, ingredientTwo]
-	};
-
-	let drinks: Drink[] = $state([someDrink]);
+	let ingredientsError = $state('');
 
 	function addIngredient() {
-		ingredients.push({ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' });
+		ingredients.push({
+			ingredient: ingredientTemplate,
+			open: false,
+			triggerRef: null!,
+			error: ''
+		});
 	}
 
 	function getIngredientName(id: string): string {
 		const ingredient = allIngredients.find((ingr) => ingr.id === id);
 		return ingredient?.name ?? '';
+	}
+
+	function getErrors() {
+		if (ingredients.length == 0) {
+			ingredientsError = 'You actually have to add something.';
+		}
+		for (let ingredient of ingredients) {
+			console.log(ingredient.ingredient.id);
+			if (!ingredient.ingredient.id) {
+				ingredient.error = 'You actually have to choose something.';
+				continue;
+			}
+			if (ingredient.ingredient.amountML == 0) {
+				ingredient.error = 'Are you sure this is the actual amount?';
+			}
+		}
 	}
 
 	async function addDrink() {
@@ -148,8 +142,11 @@
 						{...constraints}
 						bind:value={$form.name}
 					/>
-					{#if $errors.name}<span class="text-danger col-span-3 col-start-2">{$errors.name}</span
-						>{/if}
+				</div>
+				<div class="-m-2 text-center">
+					{#if $errors.name}
+						<span class="text-danger col-span-3 col-start-2">{$errors.name}</span>
+					{/if}
 				</div>
 				<Separator />
 				{#each ingredients as ingredient}
@@ -215,15 +212,20 @@
 							/>
 						</div>
 					</div>
+					<div class="-m-2 text-center">
+						{#if ingredient.error}
+							<span class="text-danger col-span-3 col-start-2">{ingredient.error}</span>
+						{/if}
+					</div>
 				{/each}
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Button class="col-span-2 col-start-2" variant="outline" onclick={addIngredient}
 						>Add another ingredient</Button
 					>
 				</div>
-				<div>
-					{#if $errors.ingredients}
-						<span class="text-danger col-span-3 col-start-2">{$errors.ingredients.amountMl}</span>
+				<div class="-m-2 text-center">
+					{#if ingredientsError}
+						<span class="text-danger col-span-3 col-start-2">{ingredientsError}</span>
 					{/if}
 				</div>
 			</div>
