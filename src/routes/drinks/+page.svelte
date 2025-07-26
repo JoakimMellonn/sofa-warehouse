@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Drink, Ingredient } from './drinks';
+	import type { Drink } from './drinks';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -22,15 +22,15 @@
 	};
 
 	let { data } = $props();
-	const allIngredients: SelectIngredient[] = data.ingredients;
+	let allIngredients: SelectIngredient[] = $state(data.ingredients);
 	let drinks: Drink[] = $state(data.drinks);
+	let loading: boolean = $state(false);
 
 	const { form, enhance, constraints, errors } = superForm(data.form, {
 		dataType: 'json',
 		validators: zod4Client(drinkSchema),
 		onSubmit: ({ jsonData }) => {
-			console.log('hello');
-
+			loading = true;
 			const data = {
 				...$form,
 				ingredients: ingredients.map(({ ingredient }) => ingredient)
@@ -46,10 +46,11 @@
 			console.log('error');
 			console.log(result.error);
 		},
-		onResult: ({ result }) => {
+		onResult: async ({ result }) => {
 			console.log('result');
 			console.log(result);
 			if (result.type === 'success') {
+				await updateTable();
 				dialogOpen = false;
 				selectedItem = undefined;
 			}
@@ -57,6 +58,8 @@
 			if (result.type === 'failure') {
 				getErrors();
 			}
+
+			loading = false;
 		}
 	});
 	let dialogOpen: boolean = $state(false);
@@ -105,12 +108,38 @@
 
 	function addDrink() {
 		ingredients = [{ ingredient: ingredientTemplate, open: false, triggerRef: null!, error: '' }];
+		$form.id = '';
+		$form.name = '';
 		dialogOpen = true;
 	}
 
-	async function updateDrink() {}
+	async function updateDrink(selectedDrink: Drink) {
+		selectedItem = selectedDrink;
 
-	async function updateTable() {}
+		$form.id = selectedDrink.drink.id;
+		$form.name = selectedDrink.drink.name;
+
+		ingredients = [];
+		for (let ingredient of selectedDrink.ingredients) {
+			ingredients.push({
+				ingredient: { id: ingredient.ingredient.id, amountML: ingredient.amountMl },
+				open: false,
+				triggerRef: null!,
+				error: ''
+			});
+		}
+		dialogOpen = true;
+	}
+
+	async function updateTable() {
+		try {
+			const data = await (await fetch('/api/drinks')).json();
+			allIngredients = data.ingredients;
+			drinks = data.drinks;
+		} catch (error) {
+			console.log(error);
+		}
+	}
 </script>
 
 <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Drinks</h1>
@@ -247,9 +276,9 @@
 			</div>
 			<Dialog.Footer>
 				{#if selectedItem}
-					<Button type="submit">Update drink</Button>
+					<Button type="submit" {loading}>Update drink</Button>
 				{:else}
-					<Button type="submit">Add drink</Button>
+					<Button type="submit" {loading}>Add drink</Button>
 				{/if}
 			</Dialog.Footer>
 		</form>
