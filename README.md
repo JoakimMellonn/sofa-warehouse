@@ -4,4 +4,12 @@
 
 - [x] edit amount by clicking on amount (in inventory)
 - [x] add selection options
-- [ ] add page for drinks
+- [x] add page for drinks
+  - [x] get drinks from db
+  - [x] handle errors
+  - [x] edit drinks
+  - [x] remove ingredient when adding
+  - [x] remove ingredient when editing
+  - [x] add loading to both drinks and ingredients
+- [ ] fix cross origin
+- [ ] add authentication

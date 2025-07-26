@@ -7,3 +7,16 @@ export const itemSchema = z.object({
 	unit: z.string().min(1, 'You actually have to write something.'),
 	sizeML: z.number().min(1, 'Are you sure this is the actual size?')
 });
+
+export const ingredientSchema = z.object({
+	id: z.string(),
+	amountML: z.number().min(1, 'Are you sure this is the actual size?')
+});
+
+export type IngredientSchema = z.infer<typeof ingredientSchema>;
+
+export const drinkSchema = z.object({
+	id: z.string(),
+	name: z.string().min(1, 'You actually have to write something.'),
+	ingredients: z.array(ingredientSchema)
+});
