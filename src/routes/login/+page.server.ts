@@ -1,6 +1,7 @@
+import { auth } from '$lib/auth';
 import { userLoginSchema } from '$lib/zod/schema';
-import { redirect, type Actions } from '@sveltejs/kit';
-import { fail, superValidate } from 'sveltekit-superforms';
+import { type Actions } from '@sveltejs/kit';
+import { fail, setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 
 export const load = async () => {
@@ -17,6 +18,16 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		return redirect(307, '/');
+		try {
+			await auth.api.signInEmail({
+				body: {
+					email: form.data.email,
+					password: form.data.password,
+					callbackURL: '/'
+				}
+			});
+		} catch (error) {
+			return setError(form, 'email', JSON.stringify(error));
+		}
 	}
 } satisfies Actions;

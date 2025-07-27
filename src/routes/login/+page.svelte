@@ -4,20 +4,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { superForm } from 'sveltekit-superforms';
-	import { setContext } from 'svelte';
-	import { writable } from 'svelte/store';
 
 	export let data;
-
-	const loginInfoWritable = writable();
-
 	const { form, errors, constraints, message, enhance } = superForm(data.form);
-
-	$: loginInfoWritable.set({
-		email: $form.email,
-		password: $form.password
-	});
-	setContext('loginInfo', loginInfoWritable);
 </script>
 
 <div class="flex h-screen items-center justify-center">
@@ -52,10 +41,10 @@
 					/>
 					{#if $errors.password}<span class="text-red-500">{$errors.password}</span>{/if}
 				</div>
-				<a href="/reset-account"><Card.Description>Forgot password?</Card.Description></a>
+				<a href="/login/reset-account"><Card.Description>Forgot password?</Card.Description></a>
 			</Card.Content>
 			<Card.Footer class="flex justify-between space-x-5">
-				<a href="/create-account"
+				<a href="/login/create-account"
 					><Button variant="outline" class="flex-1">Create account</Button></a
 				>
 				<Button class="flex-1" type="submit">Sign in</Button>
