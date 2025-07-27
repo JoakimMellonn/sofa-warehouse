@@ -11,5 +11,5 @@
   - [x] remove ingredient when adding
   - [x] remove ingredient when editing
   - [x] add loading to both drinks and ingredients
-- [ ] fix cross origin
+- [x] fix cross origin
 - [ ] add authentication
