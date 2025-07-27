@@ -20,3 +20,34 @@ export const drinkSchema = z.object({
 	name: z.string().min(1, 'You actually have to write something.'),
 	ingredients: z.array(ingredientSchema)
 });
+
+// Login pages
+export const userCreateSchema = z.object({
+	firstName: z.string().min(1, { message: "You can't not have a name?" }),
+	lastName: z.string().min(1, { message: 'You must have a last name' }),
+	email: z.email(),
+	password: z.string().min(10),
+	confirmPassword: z.string().min(10)
+});
+
+export const userLoginSchema = z.object({
+	email: z.email(),
+	password: z.string().min(10)
+});
+
+export const userResetSchema = z.object({
+	email: z.email(),
+	confirmPassword: z.string().min(10),
+	token: z.string().nullable()
+});
+
+export const passwordResetSchema = z.object({
+	password: z.string().min(10),
+	confirmPassword: z.string().min(10),
+	token: z.string().nullable()
+});
+
+export const verifyEmailSchema = z.object({
+	code: z.string().min(6).max(6),
+	userId: z.string()
+});
