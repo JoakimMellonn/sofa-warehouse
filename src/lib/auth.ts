@@ -12,6 +12,16 @@ export const auth = betterAuth({
 			...schema
 		}
 	}),
+	user: {
+		additionalFields: {
+			role: {
+				type: 'string',
+				required: false,
+				defaultValue: 'guest',
+				input: false
+			}
+		}
+	},
 	emailAndPassword: {
 		enabled: true
 	},

@@ -9,7 +9,7 @@
 	const { form, errors, constraints, message, enhance } = superForm(data.form);
 </script>
 
-<div class="flex h-screen items-center justify-center">
+<div class="mt-16 flex items-center justify-center">
 	<form method="post" use:enhance>
 		<Card.Root class="w-[350px]">
 			<Card.Header class="space-y-1">
@@ -41,7 +41,7 @@
 					/>
 					{#if $errors.password}<span class="text-red-500">{$errors.password}</span>{/if}
 				</div>
-				<a href="/login/reset-account"><Card.Description>Forgot password?</Card.Description></a>
+				<!-- <a href="/login/reset-account"><Card.Description>Forgot password?</Card.Description></a> -->
 			</Card.Content>
 			<Card.Footer class="flex justify-between space-x-5">
 				<a href="/login/create-account"

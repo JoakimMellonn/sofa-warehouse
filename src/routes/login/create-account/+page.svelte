@@ -10,7 +10,7 @@
 	const { form, errors, constraints, message, enhance } = superForm(data.form);
 </script>
 
-<div class="flex h-screen items-center justify-center">
+<div class="mt-16 flex items-center justify-center">
 	<form method="post" use:enhance>
 		<Card.Root class="w-[350px]">
 			<Card.Header class="space-y-1">
