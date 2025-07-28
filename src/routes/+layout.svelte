@@ -52,6 +52,9 @@
 					<NavigationMenu.Item>
 						<NavigationMenu.Link href="/inventory">Inventory</NavigationMenu.Link>
 					</NavigationMenu.Item>
+					<NavigationMenu.Item>
+						<NavigationMenu.Link href="/user-management">User Management</NavigationMenu.Link>
+					</NavigationMenu.Item>
 				</NavigationMenu.List>
 			</NavigationMenu.Root>
 		{/if}
