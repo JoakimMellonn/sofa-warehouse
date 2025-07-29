@@ -12,6 +12,8 @@
   - [x] remove ingredient when editing
   - [x] add loading to both drinks and ingredients
 - [x] fix cross origin
-- [ ] add authentication
+- [x] add authentication
   - [x] add better auth
-  - [ ] add user management
+  - [x] add user management
+- [ ] event page
+- [ ] dashboard page
