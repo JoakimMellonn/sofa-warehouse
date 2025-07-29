@@ -54,8 +54,8 @@
 			<Table.Head>Name</Table.Head>
 			<Table.Head>Email</Table.Head>
 			<Table.Head>Role</Table.Head>
-			<Table.Head class="text-center">Change role</Table.Head>
-			<Table.Head class="text-center">Remove User</Table.Head>
+			<Table.Head>Change role</Table.Head>
+			<Table.Head>Remove User</Table.Head>
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
