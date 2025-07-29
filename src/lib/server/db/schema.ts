@@ -132,7 +132,7 @@ export const user = pgTable('user', {
 	updatedAt: timestamp('updated_at')
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
-	role: text('role').default('guest'),
+	role: text('role').default('user'),
 	banned: boolean('banned'),
 	banReason: text('ban_reason'),
 	banExpires: timestamp('ban_expires')

@@ -1,18 +1,45 @@
 <script lang="ts">
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { authClient } from '$lib/authClient';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Table from '$lib/components/ui/table/index.js';
 
 	const { data } = $props();
-	const users = data.users;
-	console.log(users);
+	let users = $state(data.users);
+	let loading: boolean = $state(false);
 
-	async function makeAdmin(user: any) {
+	async function changeRole(user: any, role: 'user' | 'admin') {
+		loading = true;
 		await authClient.admin.setRole({
 			userId: user.id,
-			role: 'admin'
+			role: role
 		});
-		// TODO: refresh table
+		await updateTable();
+		loading = false;
+	}
+
+	async function removeUser(user: any) {
+		loading = true;
+		await authClient.admin.removeUser({
+			userId: user.id
+		});
+		await updateTable();
+		loading = false;
+	}
+
+	async function updateTable() {
+		const { data, error } = await authClient.admin.listUsers({
+			query: {
+				limit: 1000
+			}
+		});
+		if (error) {
+			console.log(error);
+		}
+
+		if (data) {
+			users = data.users;
+		}
 	}
 </script>
 
@@ -27,6 +54,8 @@
 			<Table.Head>Name</Table.Head>
 			<Table.Head>Email</Table.Head>
 			<Table.Head>Role</Table.Head>
+			<Table.Head class="text-center">Change role</Table.Head>
+			<Table.Head class="text-center">Remove User</Table.Head>
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
@@ -34,11 +63,42 @@
 			<Table.Row>
 				<Table.Cell>{user.name}</Table.Cell>
 				<Table.Cell>{user.email}</Table.Cell>
-				<Table.Cell
-					>{user.role}
+				<Table.Cell>{user.role}</Table.Cell>
+				<Table.Cell>
 					{#if user.role != 'admin'}
-						<Button class="ml-4 h-8" onclick={() => makeAdmin(user)}>Make admin</Button>
+						<Button class="h-8" {loading} onclick={() => changeRole(user, 'admin')}
+							>Make admin</Button
+						>
+					{:else}
+						<Button class="h-8" variant="outline" {loading} onclick={() => changeRole(user, 'user')}
+							>Make guest</Button
+						>
 					{/if}
+				</Table.Cell>
+				<Table.Cell>
+					<Dialog.Root>
+						<Dialog.Trigger class="{buttonVariants({ variant: 'destructive' })} h-8"
+							>Remove user</Dialog.Trigger
+						>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
+								<Dialog.Description>
+									This action cannot be undone. This will permanently delete this account.
+								</Dialog.Description>
+							</Dialog.Header>
+							<Dialog.Footer>
+								<Button
+									class="h-8"
+									variant="destructive"
+									{loading}
+									onclick={() => removeUser(user)}
+								>
+									Yes, delete the user
+								</Button>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Root>
 				</Table.Cell>
 			</Table.Row>
 		{/each}
