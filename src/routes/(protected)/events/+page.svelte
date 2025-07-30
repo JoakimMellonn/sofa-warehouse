@@ -10,10 +10,19 @@
 	import { partialEvent } from '$lib/zod/schema';
 
 	const { data } = $props();
-	const { form, errors, constraints, enhance, validateForm } = superForm(data.form);
+	const { form, errors, constraints, enhance, validateForm } = superForm(data.form, {
+		onSubmit: () => (loading = true),
+		onResult: ({ result }) => {
+			loading = false;
+			if (result.type === 'success') {
+				dialogOpen = false;
+			}
+		}
+	});
 	const proxyDate = dateProxy(form, 'datetime', { format: 'datetime-local' });
 	let dialogOpen: boolean = $state(false);
 	let currentPage: number = $state(0);
+	let loading: boolean = $state(false);
 </script>
 
 <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Events</h1>
@@ -174,8 +183,8 @@
 					/>
 				</div>
 				<Dialog.Footer>
-					<Button variant="outline" onclick={() => (currentPage = 1)}>Back</Button>
-					<Button type="submit">Add event</Button>
+					<Button variant="outline" {loading} onclick={() => (currentPage = 1)}>Back</Button>
+					<Button type="submit" {loading}>Add event</Button>
 				</Dialog.Footer>
 			{/if}
 		</form>
