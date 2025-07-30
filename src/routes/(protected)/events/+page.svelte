@@ -8,6 +8,7 @@
 	import { dateProxy, superForm } from 'sveltekit-superforms';
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { partialEvent } from '$lib/zod/schema';
+	import { toast } from 'svelte-sonner';
 
 	const { data } = $props();
 	const { form, errors, constraints, enhance, validateForm } = superForm(data.form, {
@@ -15,6 +16,7 @@
 		onResult: ({ result }) => {
 			loading = false;
 			if (result.type === 'success') {
+				toast.success('Added event!');
 				dialogOpen = false;
 			}
 		}

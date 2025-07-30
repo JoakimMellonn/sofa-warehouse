@@ -8,6 +8,7 @@
 	import { superForm } from 'sveltekit-superforms';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { itemSchema } from '$lib/zod/schema';
+	import { toast } from 'svelte-sonner';
 
 	let { data } = $props();
 	let ingredients: SelectIngredient[] = $state(data.ingredients);
@@ -17,7 +18,7 @@
 			if (result.type === 'success') {
 				dialogOpen = false;
 				selectedItem = undefined;
-				console.log(result.data!.form.message);
+				toast.success('Added item!');
 				ingredients = result.data!.form.message;
 			}
 		}

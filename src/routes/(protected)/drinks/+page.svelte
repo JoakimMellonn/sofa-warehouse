@@ -15,6 +15,7 @@
 	import { CheckIcon, ChevronsUpDownIcon, Trash2 } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { tick } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const ingredientTemplate: IngredientSchema = {
 		id: '',
@@ -51,6 +52,7 @@
 			console.log(result);
 			if (result.type === 'success') {
 				await updateTable();
+				toast.success('Added drink!');
 				dialogOpen = false;
 				selectedItem = undefined;
 			}

@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { authClient } from '$lib/authClient';
 	import { goto } from '$app/navigation';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	let { children } = $props();
 	const session = authClient.useSession();
@@ -22,6 +23,7 @@
 </script>
 
 <ModeWatcher />
+<Toaster />
 <header
 	class="flex items-center justify-between border-b border-solid px-10 py-3 whitespace-nowrap"
 >
