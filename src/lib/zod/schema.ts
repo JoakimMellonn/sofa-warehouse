@@ -21,6 +21,23 @@ export const drinkSchema = z.object({
 	ingredients: z.array(ingredientSchema)
 });
 
+export const eventSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	status: z.enum(['scheduled', 'planning', 'done']).default('scheduled'),
+	datetime: z.date(),
+	location: z.string(),
+	numberOfParticipants: z.number().default(0),
+	price: z.number().min(0).default(0)
+});
+
+export const partialEvent = z.object({
+	name: z.string().min(1, 'You actually have to write something.'),
+	location: z.string().min(1, 'You actually have to write something.'),
+	numberOfParticipants: z.number().min(0, "No, it can't be less than zero...").default(0),
+	price: z.number().min(0, "No, it can't be less than zero...").default(0)
+});
+
 // Login pages
 export const userCreateSchema = z.object({
 	firstName: z.string().min(1, { message: "You can't not have a name?" }),

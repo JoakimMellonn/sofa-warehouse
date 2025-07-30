@@ -43,6 +43,7 @@
 		"tw-animate-css": "^1.3.0",
 		"typescript": "^5.0.0",
 		"vite": "^6.2.6",
+		"yeezy-dates": "^1.0.1",
 		"zod": "^3.25.67"
 	},
 	"dependencies": {
