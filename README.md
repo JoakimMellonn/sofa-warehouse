@@ -16,10 +16,9 @@
   - [x] add better auth
   - [x] add user management
 - [ ] events page
-  - [ ] add new event
+  - [x] add new event
+  - [x] add events page
   - [ ] single event page
     - [ ] add drinks to event
     - [ ] edit event
-    - [ ]
-  - [ ]
 - [ ] dashboard page
