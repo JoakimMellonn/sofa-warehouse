@@ -28,7 +28,7 @@ export const eventSchema = z.object({
 	datetime: z.date(),
 	location: z.string(),
 	numberOfParticipants: z.number().default(0),
-	price: z.number().min(0).default(0)
+	price: z.number().min(0).max(6969696969696969).default(0)
 });
 
 export const partialEvent = z.object({

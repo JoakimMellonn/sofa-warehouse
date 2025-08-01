@@ -8,8 +8,11 @@ import { event, type InsertEvent } from '$lib/server/db/schema';
 export const load: PageServerLoad = async ({}) => {
 	const form = await superValidate(zod4(eventSchema));
 
+	const events = await db.select().from(event).orderBy(event.datetime);
+
 	return {
-		form: form
+		form: form,
+		events: events
 	};
 };
 
@@ -25,7 +28,7 @@ export const actions = {
 		const newEvent: InsertEvent = {
 			name: form.data.name,
 			status: form.data.status,
-			datetime: new Date(form.data.datetime), // FIX: huh?
+			datetime: form.data.datetime,
 			location: form.data.location,
 			numberOfParticipants: form.data.numberOfParticipants,
 			price: form.data.price.toString()

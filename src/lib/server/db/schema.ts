@@ -22,7 +22,7 @@ export const event = pgTable('event', {
 	datetime: timestamp('datetime', { withTimezone: true }).notNull().defaultNow(),
 	location: text('location').notNull().default('None'),
 	numberOfParticipants: integer('number_of_participants').notNull().default(0),
-	price: numeric({ precision: 2 }).notNull().default('0')
+	price: numeric({ precision: 69, scale: 2 }).notNull().default('0')
 });
 
 export const eventRelations = relations(event, ({ many }) => ({

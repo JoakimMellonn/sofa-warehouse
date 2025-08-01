@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Table from '$lib/components/ui/table/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { NLPDateInput } from '$lib/components/ui/nlp-date-input/index.js';
@@ -9,22 +10,72 @@
 	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { partialEvent } from '$lib/zod/schema';
 	import { toast } from 'svelte-sonner';
+	import type { SelectEvent } from '$lib/server/db/schema.js';
+	import StatusButton from '$lib/components/ui/status-button/status-button.svelte';
+	import { goto } from '$app/navigation';
 
 	const { data } = $props();
 	const { form, errors, constraints, enhance, validateForm } = superForm(data.form, {
-		onSubmit: () => (loading = true),
-		onResult: ({ result }) => {
-			loading = false;
+		dataType: 'json',
+		onSubmit: () => {
+			loading = true;
+			console.log($form);
+		},
+		onResult: async ({ result }) => {
 			if (result.type === 'success') {
 				toast.success('Added event!');
+				await updateTable();
 				dialogOpen = false;
 			}
+			loading = false;
 		}
 	});
 	const proxyDate = dateProxy(form, 'datetime', { format: 'datetime-local' });
+
+	let events: SelectEvent[] = $state(data.events);
+	let upcomingEvents: SelectEvent[] = $derived(
+		events.filter((event) => event.datetime > new Date())
+	);
+	let pastEvents: SelectEvent[] = $derived(events.filter((event) => event.datetime < new Date()));
+
 	let dialogOpen: boolean = $state(false);
 	let currentPage: number = $state(0);
 	let loading: boolean = $state(false);
+
+	async function updateTable() {
+		try {
+			const data = await fetch('/api/events');
+			const payload = await data.json();
+			events = payload.events.map((ev: any) => ({
+				...ev,
+				datetime: new Date(ev.datetime)
+			}));
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	function formatDate(date: Date): string {
+		const months = [
+			'January',
+			'February',
+			'March',
+			'April',
+			'May',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December'
+		];
+		return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+	}
+
+	function formatTime(date: Date): string {
+		return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+	}
 </script>
 
 <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Events</h1>
@@ -35,8 +86,66 @@
 </div>
 
 <h3 class="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">Coming events</h3>
+<div class="mt-4 rounded-lg border">
+	<Table.Root>
+		<Table.Header>
+			<Table.Row>
+				<Table.Head class="min-w-[200px]">Name</Table.Head>
+				<Table.Head>Date</Table.Head>
+				<Table.Head>Starting Time</Table.Head>
+				<Table.Head>Location</Table.Head>
+				<Table.Head>Status</Table.Head>
+			</Table.Row>
+		</Table.Header>
+		<Table.Body>
+			{#each upcomingEvents as event}
+				<Table.Row class="h-20">
+					<Table.Cell><a href={`/events/${event.id}`}>{event.name}</a></Table.Cell>
+					<Table.Cell>{formatDate(event.datetime)}</Table.Cell>
+					<Table.Cell>{formatTime(event.datetime)}</Table.Cell>
+					<Table.Cell>{event.location}</Table.Cell>
+					<Table.Cell><StatusButton status={event.status} class="h-8" /></Table.Cell>
+				</Table.Row>
+			{/each}
+			{#if upcomingEvents.length == 0}
+				<Table.Row>
+					<Table.Cell colspan={5} class="h-20 text-center">No results.</Table.Cell>
+				</Table.Row>
+			{/if}
+		</Table.Body>
+	</Table.Root>
+</div>
 
 <h3 class="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">Past events</h3>
+<div class="mt-4 rounded-lg border">
+	<Table.Root>
+		<Table.Header>
+			<Table.Row>
+				<Table.Head class="min-w-[200px]">Name</Table.Head>
+				<Table.Head>Date</Table.Head>
+				<Table.Head>Starting Time</Table.Head>
+				<Table.Head>Location</Table.Head>
+				<Table.Head>Status</Table.Head>
+			</Table.Row>
+		</Table.Header>
+		<Table.Body>
+			{#each pastEvents as event}
+				<Table.Row class="h-20">
+					<Table.Cell><a href={`/events/${event.id}`}>{event.name}</a></Table.Cell>
+					<Table.Cell>{formatDate(event.datetime)}</Table.Cell>
+					<Table.Cell>{formatTime(event.datetime)}</Table.Cell>
+					<Table.Cell>{event.location}</Table.Cell>
+					<Table.Cell><StatusButton status={event.status} class="h-8" /></Table.Cell>
+				</Table.Row>
+			{/each}
+			{#if pastEvents.length == 0}
+				<Table.Row>
+					<Table.Cell colspan={5} class="h-20 text-center">No results.</Table.Cell>
+				</Table.Row>
+			{/if}
+		</Table.Body>
+	</Table.Root>
+</div>
 
 <Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content>
@@ -153,7 +262,7 @@
 						type="datetime-local"
 						class="col-span-3"
 						disabled={true}
-						bind:value={$proxyDate}
+						value={$proxyDate}
 					/>
 					<Label for="location" class="text-right">Location</Label>
 					<Input
@@ -186,7 +295,7 @@
 				</div>
 				<Dialog.Footer>
 					<Button variant="outline" {loading} onclick={() => (currentPage = 1)}>Back</Button>
-					<Button type="submit" {loading}>Add event</Button>
+					<Button autofocus type="submit" {loading}>Add event</Button>
 				</Dialog.Footer>
 			{/if}
 		</form>
