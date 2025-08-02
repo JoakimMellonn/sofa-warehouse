@@ -69,12 +69,12 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each drinks as drink}
+			{#each drinks as relation}
 				<Table.Row class="h-20">
-					<Table.Cell>{drink.drink.drink.name}</Table.Cell>
+					<Table.Cell>{relation.drink.drink.name}</Table.Cell>
 					<Table.Cell>
-						{#if drink.drink.ingredients.length > 0}
-							{#each drink.drink.ingredients as ingredient}
+						{#if relation.drink.ingredients.length > 0}
+							{#each relation.drink.ingredients as ingredient}
 								<Dialog.Root>
 									<Dialog.Trigger class="{buttonVariants({ variant: 'default' })} mr-2 h-8">
 										{ingredient.ingredient.name} ({ingredient.amountMl} ml)
@@ -128,7 +128,7 @@
 							<p>No ingredients.</p>
 						{/if}
 					</Table.Cell>
-					<Table.Cell>{drink.amountSold}</Table.Cell>
+					<Table.Cell>{relation.amountSold}</Table.Cell>
 				</Table.Row>
 			{/each}
 			{#if drinks.length == 0}
