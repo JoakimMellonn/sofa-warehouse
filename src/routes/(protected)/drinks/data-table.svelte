@@ -39,7 +39,7 @@
 	import DataTableToolbar from './data-table-toolbar.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { SquarePen } from '@lucide/svelte';
-	import type { Drink, Ingredient } from './drinks';
+	import type { Drink, Ingredient } from '$lib/types/drinks';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 

@@ -1,7 +1,7 @@
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 import type { Actions, PageServerLoad } from './$types';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import type { Drink, Ingredient } from './drinks';
+import type { Drink, Ingredient } from '$lib/types/drinks';
 import { drinkSchema } from '$lib/zod/schema';
 import {
 	drink,

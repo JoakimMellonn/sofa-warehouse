@@ -12,7 +12,6 @@
 	import { toast } from 'svelte-sonner';
 	import type { SelectEvent } from '$lib/server/db/schema.js';
 	import StatusButton from '$lib/components/ui/status-button/status-button.svelte';
-	import { goto } from '$app/navigation';
 
 	const { data } = $props();
 	const { form, errors, constraints, enhance, validateForm } = superForm(data.form, {

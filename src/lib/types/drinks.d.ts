@@ -9,3 +9,8 @@ export type Drink = {
 	drink: SelectDrink;
 	ingredients: Ingredient[];
 };
+
+export type DrinkRelation = {
+	drink: Drink;
+	amountSold: number;
+};

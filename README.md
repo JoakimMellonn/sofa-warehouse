@@ -22,3 +22,4 @@
     - [ ] add drinks to event
     - [ ] edit event
 - [ ] dashboard page
+- [ ] make mobile friendly
