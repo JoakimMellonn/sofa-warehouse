@@ -12,6 +12,7 @@
 	import { tick } from 'svelte';
 	import { cn } from '$lib/utils.js';
 	import { toast } from 'svelte-sonner';
+	import type { DrinkRelation } from '$lib/types/drinks.js';
 
 	const { data } = $props();
 	const event = data.event;
@@ -88,6 +89,24 @@
 		addedDrinks = [{ drink: drinkTemplate, open: false, triggerRef: null!, error: '' }];
 	}
 
+	async function removeDrink(drink: DrinkRelation) {
+		loading = true;
+		const body = { drinks: [drink.drink.drink] };
+		const result = await fetch(`/api/events/${event.id}/drinks`, {
+			method: 'DELETE',
+			body: JSON.stringify(body)
+		});
+
+		if (result.status == 400) {
+			toast.error('Something went wrong! Check logs');
+			return;
+		}
+
+		await updateTable();
+		loading = false;
+		toast.success('Drink removed!');
+	}
+
 	function checkErrors(): boolean {
 		let error = false;
 		for (let drink of addedDrinks) {
@@ -108,7 +127,7 @@
 		addedDrinks.push({ drink: drinkTemplate, open: false, triggerRef: null!, error: '' });
 	}
 
-	function removeDrink(index: number) {
+	function removeAddedDrink(index: number) {
 		addedDrinks.splice(index, 1);
 	}
 
@@ -158,6 +177,7 @@
 				<Table.Head>Name</Table.Head>
 				<Table.Head>Ingredients</Table.Head>
 				<Table.Head class="max-w-10">Amount Sold</Table.Head>
+				<Table.Head class="max-w-4"></Table.Head>
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
@@ -221,6 +241,19 @@
 						{/if}
 					</Table.Cell>
 					<Table.Cell>{relation.amountSold}</Table.Cell>
+					<Table.Cell class="text-center">
+						<Button
+							variant="secondary"
+							size="icon"
+							class="size-9"
+							{loading}
+							onclick={() => {
+								removeDrink(relation);
+							}}
+						>
+							<Trash2 />
+						</Button>
+					</Table.Cell>
 				</Table.Row>
 			{/each}
 			{#if drinks.length == 0}
@@ -296,7 +329,7 @@
 						size="icon"
 						class="size-9 translate-y-2.5"
 						onclick={() => {
-							removeDrink(addedDrinks.indexOf(drink));
+							removeAddedDrink(addedDrinks.indexOf(drink));
 						}}
 					>
 						<Trash2 />

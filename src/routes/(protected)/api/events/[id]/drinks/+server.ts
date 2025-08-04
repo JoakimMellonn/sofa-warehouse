@@ -76,3 +76,18 @@ export const POST: RequestHandler = async ({ request, params }) => {
 
 	return json({ success: true });
 };
+
+export const DELETE: RequestHandler = async ({ request, params }) => {
+	const eventId = params.id;
+	if (!eventId) {
+		return json({ error: true }, { status: 400 });
+	}
+
+	const { drinks }: { drinks: SelectDrink[] } = await request.json();
+
+	for (let drink of drinks) {
+		await db.delete(eventsToDrinks).where(eq(eventsToDrinks.drinkId, drink.id));
+	}
+
+	return json({ success: true });
+};
