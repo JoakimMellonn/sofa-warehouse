@@ -54,6 +54,11 @@
 		return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()} · ${date.toLocaleTimeString('da-DK', { hour: 'numeric', minute: 'numeric' })}`;
 	}
 
+	async function updateTable() {
+		const result = await fetch(`/api/events/${event.id}/drinks`);
+		drinks = (await result.json()).drinks;
+	}
+
 	async function addDrinks() {
 		loading = true;
 
@@ -65,7 +70,7 @@
 		const drinks = addedDrinks.map((drink) => drink.drink);
 
 		const body = { drinks, event };
-		const result = await fetch('/api/events/drinks', {
+		const result = await fetch(`/api/events/${event.id}/drinks`, {
 			method: 'POST',
 			body: JSON.stringify(body)
 		});
@@ -74,6 +79,7 @@
 			toast.error('Something went wrong! Check logs');
 			console.log(await result.json());
 		} else {
+			await updateTable();
 			toast.success('Added drinks!');
 		}
 
