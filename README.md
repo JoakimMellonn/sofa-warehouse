@@ -19,7 +19,7 @@
   - [x] add new event
   - [x] add events page
   - [ ] single event page
-    - [ ] add drinks to event
+    - [x] add drinks to event
     - [ ] edit event
 - [ ] dashboard page
 - [ ] make mobile friendly
