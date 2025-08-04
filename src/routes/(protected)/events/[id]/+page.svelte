@@ -27,6 +27,13 @@
 		triggerRef: HTMLButtonElement;
 		error: string;
 	}[] = $state([{ drink: drinkTemplate, open: false, triggerRef: null!, error: '' }]);
+	let selectableDrinks = $derived.by(() => {
+		const drinkIds = drinks.map((drink) => drink.drink.drink.id);
+		const addedIds = addedDrinks.map((drink) => drink.drink.id);
+		return allDrinks.filter(
+			(drink) => !drinkIds.includes(drink.id) && !addedIds.includes(drink.id)
+		);
+	});
 
 	const months = [
 		'January',
@@ -81,12 +88,17 @@
 			if (!drink.drink.id) {
 				drink.error = 'You actually have to choose something.';
 				error = true;
+				continue;
 			}
+			drink.error = '';
 		}
 		return error;
 	}
 
 	function addDrink() {
+		if (checkErrors()) {
+			return;
+		}
 		addedDrinks.push({ drink: drinkTemplate, open: false, triggerRef: null!, error: '' });
 	}
 
@@ -245,7 +257,7 @@
 								<Command.List>
 									<Command.Empty>No framework found.</Command.Empty>
 									<Command.Group>
-										{#each allDrinks as drnk}
+										{#each selectableDrinks as drnk}
 											<Command.Item
 												value={drnk.name}
 												onSelect={() => {
@@ -254,6 +266,7 @@
 													tick().then(() => {
 														drink.triggerRef.focus();
 													});
+													checkErrors();
 												}}
 											>
 												<CheckIcon
@@ -290,7 +303,7 @@
 				{/if}
 			</div>
 		{/each}
-		{#if addedDrinks.length != allDrinks.length}
+		{#if selectableDrinks.length}
 			<div class="grid grid-cols-4 items-center gap-4">
 				<Button class="col-span-2 col-start-2" variant="outline" onclick={addDrink}
 					>Add another drink</Button
