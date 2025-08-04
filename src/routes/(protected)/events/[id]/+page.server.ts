@@ -20,6 +20,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		.from(eventsToDrinks)
 		.where(eq(eventsToDrinks.eventId, id));
 
+	const allDrinks = await db.select().from(drink);
 	const ingredients: SelectIngredient[] = await db.select().from(ingredient);
 	let drinkRelations: DrinkRelation[] = [];
 
@@ -27,7 +28,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		const relations = await db
 			.select()
 			.from(drinksToIngredients)
-			.where(eq(drinksToIngredients.drinkId, drink.id));
+			.where(eq(drinksToIngredients.drinkId, relation.drinkId));
 
 		let drinkIngredients: Ingredient[] = [];
 		for (let relation of relations) {
@@ -48,6 +49,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	return {
 		event: events[0],
-		drinks: drinkRelations
+		drinks: drinkRelations,
+		allDrinks: allDrinks
 	};
 };

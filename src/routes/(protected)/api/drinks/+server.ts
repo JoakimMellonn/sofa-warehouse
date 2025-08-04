@@ -7,7 +7,7 @@ import {
 } from '$lib/server/db/schema';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-import type { Drink, Ingredient } from '../../drinks/drinks';
+import type { Drink, Ingredient } from '$lib/types/drinks';
 
 export const GET: RequestHandler = async () => {
 	const ingredients: SelectIngredient[] = await db.select().from(ingredient);

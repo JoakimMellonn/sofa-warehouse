@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Drink } from './drinks';
+	import type { Drink } from '$lib/types/drinks';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -205,7 +205,7 @@
 								</Popover.Trigger>
 								<Popover.Content class="w-[200px] p-0">
 									<Command.Root>
-										<Command.Input placeholder="Search framework..." />
+										<Command.Input placeholder="Search ingredients..." />
 										<Command.List>
 											<Command.Empty>No framework found.</Command.Empty>
 											<Command.Group>

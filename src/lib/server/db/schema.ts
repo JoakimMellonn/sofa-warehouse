@@ -56,6 +56,8 @@ export const eventsToDrinksRelations = relations(eventsToDrinks, ({ one }) => ({
 
 export type SelectEvent = typeof event.$inferSelect;
 export type InsertEvent = typeof event.$inferInsert;
+export type SelectEventsToDrinks = typeof eventsToDrinks.$inferSelect;
+export type InsertEventsToDrinks = typeof eventsToDrinks.$inferInsert;
 
 // Drinks and ingredients
 export const drink = pgTable('drink', {
