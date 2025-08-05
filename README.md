@@ -15,12 +15,12 @@
 - [x] add authentication
   - [x] add better auth
   - [x] add user management
-- [ ] events page
+- [x] events page
   - [x] add new event
   - [x] add events page
-  - [ ] single event page
+  - [x] single event page
     - [x] add drinks to event
-    - [ ] edit event
+    - [x] edit event
 - [ ] dashboard page
 - [ ] make mobile friendly
 - [ ] remove selected drinks and ingredients from select lists
