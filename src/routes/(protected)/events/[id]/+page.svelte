@@ -13,6 +13,7 @@
 	import { cn } from '$lib/utils.js';
 	import { toast } from 'svelte-sonner';
 	import type { DrinkRelation } from '$lib/types/drinks.js';
+	import EditBox from '$lib/components/ui/edit-box/edit-box.svelte';
 
 	const { data } = $props();
 	const event = data.event;
@@ -76,7 +77,7 @@
 			body: JSON.stringify(body)
 		});
 
-		if (result.status == 400) {
+		if (result.status != 200) {
 			toast.error('Something went wrong! Check logs');
 			console.log(await result.json());
 		} else {
@@ -97,7 +98,8 @@
 			body: JSON.stringify(body)
 		});
 
-		if (result.status == 400) {
+		if (result.status != 200) {
+			loading = false;
 			toast.error('Something went wrong! Check logs');
 			return;
 		}
@@ -105,6 +107,28 @@
 		await updateTable();
 		loading = false;
 		toast.success('Drink removed!');
+	}
+
+	async function updateAmount(value: number, drink: DrinkRelation) {
+		loading = true;
+		const body = {
+			drinkId: drink.drink.drink.id,
+			amountSold: value
+		};
+		const result = await fetch(`/api/events/${event.id}/drinks`, {
+			method: 'PUT',
+			body: JSON.stringify(body)
+		});
+
+		if (result.status != 200) {
+			loading = false;
+			toast.error('Something went wrong! Check logs');
+			return;
+		}
+
+		await updateTable();
+		loading = false;
+		toast.success('Drink updated!');
 	}
 
 	function checkErrors(): boolean {
@@ -176,7 +200,7 @@
 			<Table.Row>
 				<Table.Head>Name</Table.Head>
 				<Table.Head>Ingredients</Table.Head>
-				<Table.Head class="max-w-10">Amount Sold</Table.Head>
+				<Table.Head class="w-40">Amount Sold</Table.Head>
 				<Table.Head class="max-w-4"></Table.Head>
 			</Table.Row>
 		</Table.Header>
@@ -240,7 +264,13 @@
 							<p>No ingredients.</p>
 						{/if}
 					</Table.Cell>
-					<Table.Cell>{relation.amountSold}</Table.Cell>
+					<Table.Cell
+						><EditBox
+							bind:value={relation.amountSold}
+							type="number"
+							onChange={(value) => updateAmount(value, relation)}
+						/></Table.Cell
+					>
 					<Table.Cell class="text-center">
 						<Button
 							variant="secondary"

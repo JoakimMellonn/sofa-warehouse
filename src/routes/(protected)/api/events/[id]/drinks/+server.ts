@@ -10,7 +10,7 @@ import {
 } from '$lib/server/db/schema';
 import type { Drink, DrinkRelation, Ingredient } from '$lib/types/drinks';
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ params }) => {
 	const eventId = params.id;
@@ -70,6 +70,26 @@ export const POST: RequestHandler = async ({ request, params }) => {
 			};
 			await db.insert(eventsToDrinks).values(relation);
 		}
+	} catch (error) {
+		return json({ error }, { status: 400 });
+	}
+
+	return json({ success: true });
+};
+
+export const PUT: RequestHandler = async ({ request, params }) => {
+	const eventId = params.id;
+	if (!eventId) {
+		return json({ error: true }, { status: 400 });
+	}
+
+	const { drinkId, amountSold }: { drinkId: string; amountSold: number } = await request.json();
+
+	try {
+		await db
+			.update(eventsToDrinks)
+			.set({ amountSold })
+			.where(and(eq(eventsToDrinks.drinkId, drinkId), eq(eventsToDrinks.eventId, eventId)));
 	} catch (error) {
 		return json({ error }, { status: 400 });
 	}
