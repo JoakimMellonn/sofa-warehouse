@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import {
 	drink,
 	drinksToIngredients,
@@ -10,6 +10,9 @@ import {
 	type SelectIngredient
 } from '$lib/server/db/schema';
 import type { Drink, DrinkRelation, Ingredient } from '$lib/types/drinks';
+import { fail, message, superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { eventSchema } from '$lib/zod/schema';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const id = params.id;
@@ -47,9 +50,42 @@ export const load: PageServerLoad = async ({ params }) => {
 		drinkRelations.push({ drink: newDrink, amountSold: relation.amountSold });
 	}
 
+	const form = await superValidate(zod4(eventSchema));
+	form.data.id = events[0].id;
+	form.data.name = events[0].name;
+	form.data.status = events[0].status;
+	form.data.datetime = events[0].datetime;
+	form.data.location = events[0].location;
+	form.data.numberOfParticipants = events[0].numberOfParticipants;
+	form.data.price = +events[0].price;
+
 	return {
+		form: form,
 		event: events[0],
 		drinks: drinkRelations,
 		allDrinks: allDrinks
 	};
 };
+
+export const actions = {
+	default: async ({ request }) => {
+		const form = await superValidate(request, zod4(eventSchema));
+
+		if (!form.valid) {
+			console.log(form.errors);
+			return fail(400, { form });
+		}
+
+		const updatedEvent = {
+			name: form.data.name,
+			status: form.data.status,
+			datetime: form.data.datetime,
+			location: form.data.location,
+			numberOfParticipants: form.data.numberOfParticipants,
+			price: form.data.price.toString()
+		};
+		await db.update(event).set(updatedEvent).where(eq(event.id, form.data.id));
+
+		return message(form, 'success');
+	}
+} satisfies Actions;

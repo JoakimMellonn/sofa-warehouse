@@ -8,17 +8,35 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { SelectDrink } from '$lib/server/db/schema.js';
-	import { CheckIcon, ChevronsUpDownIcon, Trash2 } from '@lucide/svelte';
+	import { CheckIcon, ChevronsUpDownIcon, Pencil, Trash2 } from '@lucide/svelte';
 	import { tick } from 'svelte';
 	import { cn } from '$lib/utils.js';
 	import { toast } from 'svelte-sonner';
 	import type { DrinkRelation } from '$lib/types/drinks.js';
 	import EditBox from '$lib/components/ui/edit-box/edit-box.svelte';
+	import { dateProxy, superForm } from 'sveltekit-superforms';
 
 	const { data } = $props();
-	const event = data.event;
+	let event = $state(data.event);
 	const allDrinks = data.allDrinks;
 	let drinks = $state(data.drinks);
+
+	let editing: boolean = $state(false);
+	const { form, errors, constraints, enhance } = superForm(data.form, {
+		dataType: 'json',
+		onSubmit: () => {
+			loading = true;
+		},
+		onResult: async ({ result }) => {
+			if (result.type === 'success') {
+				toast.success('Added event!');
+				await updateEvent();
+				editing = false;
+			}
+			loading = false;
+		}
+	});
+	const proxyDate = dateProxy(form, 'datetime', { format: 'datetime-local' });
 
 	let dialogOpen: boolean = $state(false);
 	let loading: boolean = $state(false);
@@ -54,6 +72,24 @@
 
 	function formatDateTime(date: Date): string {
 		return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()} · ${date.toLocaleTimeString('da-DK', { hour: 'numeric', minute: 'numeric' })}`;
+	}
+
+	async function updateEvent() {
+		const result = await fetch(`/api/events/${event.id}`);
+		const json = await result.json();
+		console.log(json);
+
+		// i hate this
+		event = {
+			id: json.event.id,
+			name: json.event.name,
+			status: json.event.status,
+			datetime: new Date(json.event.datetime),
+			location: json.event.location,
+			numberOfParticipants: json.event.numberOfParticipants,
+			price: json.event.price
+		};
+		await updateTable();
 	}
 
 	async function updateTable() {
@@ -165,7 +201,17 @@
 	<a href="/events">Events</a> / <span class="text-foreground">{event.name}</span>
 </p>
 
-<h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">{event.name}</h1>
+<h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+	{event.name}
+	<Button
+		variant="ghost"
+		size="icon"
+		class="size-10 -translate-y-1.5"
+		onclick={() => (editing = true)}
+	>
+		<Pencil size={24} class="size-[24]" />
+	</Button>
+</h1>
 <p class="text-muted-foreground mt-3 text-sm">{formatDateTime(event.datetime)}</p>
 
 <h3 class="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">Event details</h3>
@@ -390,5 +436,77 @@
 			>
 			<Button autofocus {loading} onclick={addDrinks}>Add Drink</Button>
 		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root bind:open={editing}>
+	<Dialog.Content>
+		<form method="POST" use:enhance>
+			<Dialog.Header>
+				<Dialog.Title>Edit event</Dialog.Title>
+				<Dialog.Description>Add a new event to the calendar.</Dialog.Description>
+			</Dialog.Header>
+			<div class="my-4 grid grid-cols-4 items-center gap-4">
+				<Label for="name" class="text-right">Name</Label>
+				<Input
+					id="name"
+					name="name"
+					type="text"
+					class="col-span-3"
+					{...constraints}
+					bind:value={$form.name}
+				/>
+				{#if $errors.name}<span class="text-danger col-span-3 col-start-2">{$errors.name}</span
+					>{/if}
+				<Label for="datetime" class="text-right">Date and time</Label>
+				<Input
+					id="datetime"
+					name="datetime"
+					type="datetime-local"
+					class="col-span-3"
+					{...constraints}
+					value={$proxyDate}
+				/>
+				<Label for="location" class="text-right">Location</Label>
+				<Input
+					id="location"
+					name="location"
+					type="text"
+					class="col-span-3"
+					{...constraints}
+					bind:value={$form.location}
+				/>
+				{#if $errors.location}<span class="text-danger col-span-3 col-start-2"
+						>{$errors.location}</span
+					>{/if}
+				<Label for="numberOfParticipants">Number of participants</Label>
+				<Input
+					id="numberOfParticipants"
+					name="numberOfParticipants"
+					type="number"
+					class="col-span-3"
+					{...constraints}
+					bind:value={$form.numberOfParticipants}
+				/>
+				{#if $errors.numberOfParticipants}<span class="text-danger col-span-3 col-start-2"
+						>{$errors.numberOfParticipants}</span
+					>{/if}
+				<Label for="price" class="text-right">Price (DKK)</Label>
+				<Input
+					id="price"
+					name="price"
+					type="number"
+					class="col-span-3"
+					{...constraints}
+					bind:value={$form.price}
+				/>
+				{#if $errors.price}<span class="text-danger col-span-3 col-start-2">{$errors.price}</span
+					>{/if}
+			</div>
+			<Dialog.Footer>
+				<Button variant="outline" {loading} onclick={() => (editing = false)}>Back</Button>
+				<Button autofocus type="submit" {loading}>Update event</Button>
+			</Dialog.Footer>
+		</form>
 	</Dialog.Content>
 </Dialog.Root>
