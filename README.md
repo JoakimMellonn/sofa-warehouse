@@ -23,4 +23,4 @@
     - [x] edit event
 - [ ] dashboard page
 - [ ] make mobile friendly
-- [ ] remove selected drinks and ingredients from select lists
+- [x] remove selected drinks and ingredients from select lists
