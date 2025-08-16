@@ -2,8 +2,12 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import StatusButton from '$lib/components/ui/status-button/status-button.svelte';
 	import * as Table from '$lib/components/ui/table/index.js';
+	import * as Chart from '$lib/components/ui/chart/index.js';
 	import type { SelectEvent } from '$lib/server/db/schema';
 	import { Triangle } from '@lucide/svelte';
+	import { AreaChart } from 'layerchart';
+	import { scaleUtc } from 'd3-scale';
+	import { curveNatural } from 'd3-shape';
 
 	const { data } = $props();
 
@@ -11,6 +15,19 @@
 	let upcomingEvents: SelectEvent[] = $derived(
 		events.filter((event) => event.datetime > new Date())
 	);
+
+	let pastEvents: SelectEvent[] = $derived(events.filter((event) => event.datetime < new Date()));
+	let chartData = $derived(
+		pastEvents.map((event) => {
+			return { date: event.datetime, name: event.name, attendance: event.numberOfParticipants };
+		})
+	);
+	const chartConfig = {
+		event: {
+			label: 'Event',
+			color: 'var(--chart-1)'
+		}
+	} satisfies Chart.ChartConfig;
 
 	function formatDate(date: Date): string {
 		const months = [
@@ -130,3 +147,40 @@
 		</Card.Content>
 	</Card.Root>
 </div>
+
+<Card.Root>
+	<Card.Header>
+		<Card.Title>Attendance at events</Card.Title>
+		<Card.Description>The attendance at each event in the past.</Card.Description>
+	</Card.Header>
+	<Card.Content>
+		<Chart.Container config={chartConfig} class="aspect-auto h-[250px] w-full">
+			<AreaChart
+				data={chartData}
+				x="date"
+				axis="x"
+				xScale={scaleUtc()}
+				series={[{ key: 'attendance', label: 'Attendance', color: chartConfig.event.color }]}
+				props={{
+					area: {
+						curve: curveNatural,
+						'fill-opacity': 0.4,
+						line: { class: 'stroke-1' },
+						motion: 'tween'
+					},
+					xAxis: {
+						format: (v: Date) => v.toLocaleDateString('en-US', { month: 'short' })
+					}
+				}}
+			>
+				{#snippet tooltip()}
+					<Chart.Tooltip
+						labelFormatter={(v: Date) =>
+							v.toLocaleDateString('en-GB', { month: 'long', day: 'numeric' })}
+						indicator="line"
+					/>
+				{/snippet}
+			</AreaChart>
+		</Chart.Container>
+	</Card.Content>
+</Card.Root>

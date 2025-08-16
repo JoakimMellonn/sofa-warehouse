@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 import type { IngredientNeed } from '$lib/types/drinks';
 
 export const load: PageServerLoad = async ({}) => {
-	const events = await db.select().from(event).orderBy(event.datetime);
+	const allEvents = await db.select().from(event).orderBy(event.datetime);
 
 	const salesThisYear = await getSales(getCurrentYear());
 	const salesLastYear = await getSales(getCurrentYear() - 1);
@@ -14,10 +14,9 @@ export const load: PageServerLoad = async ({}) => {
 	const attendanceLastYear = await getAttendance(getCurrentYear() - 1);
 
 	const lowStock = await getLowStock();
-	console.log(lowStock);
 
 	return {
-		events: events,
+		events: allEvents,
 		salesThisYear: salesThisYear,
 		salesLastYear: salesLastYear,
 		attendanceThisYear: attendanceThisYear,
@@ -117,8 +116,6 @@ async function getLowStock(): Promise<IngredientNeed | undefined> {
 	for (let entry of mostSoldIngredients) {
 		const ingredient = allIngredients.find((ingredient) => ingredient.id === entry[0]);
 		if (!ingredient || !ingredient.amount || !entry[1]) {
-			console.log(ingredient);
-			console.log(entry);
 			continue;
 		}
 		ingredientNeed.set(entry[0], ingredient.amount / (entry[1] / ingredient.sizeML));
