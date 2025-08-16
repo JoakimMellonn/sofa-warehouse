@@ -14,3 +14,9 @@ export type DrinkRelation = {
 	drink: Drink;
 	amountSold: number;
 };
+
+export type IngredientNeed = {
+	ingredient: SelectIngredient;
+	soldLastYear: number;
+	need: number;
+};

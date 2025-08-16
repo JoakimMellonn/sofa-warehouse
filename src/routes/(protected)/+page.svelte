@@ -114,10 +114,19 @@
 	<Card.Root class="min-w-32 flex-1">
 		<Card.Header>
 			<Card.Title>Low stock</Card.Title>
-			<Card.Description>Total sales for this year</Card.Description>
+			<Card.Description>There's probably a need of this</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<p>Card Content</p>
+			{#if data.lowStock}
+				<p class="text-danger">
+					{data.lowStock.ingredient.name}: {data.lowStock.ingredient.amount} left.
+				</p>
+				<p>
+					Sold {data.lowStock.soldLastYear} the last year.
+				</p>
+			{:else}
+				<p>Please sell something...</p>
+			{/if}
 		</Card.Content>
 	</Card.Root>
 </div>
