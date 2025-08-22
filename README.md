@@ -21,7 +21,8 @@
   - [x] single event page
     - [x] add drinks to event
     - [x] edit event
-- [ ] dashboard page
+- [x] dashboard page
 - [ ] make mobile friendly
 - [x] remove selected drinks and ingredients from select lists
 - [ ] fix update event datetime
+- [ ] better registering of sales
