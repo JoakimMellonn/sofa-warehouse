@@ -76,6 +76,8 @@ export const actions = {
 			return fail(400, { form });
 		}
 
+		console.log(form.data);
+
 		const updatedEvent = {
 			name: form.data.name,
 			status: form.data.status,

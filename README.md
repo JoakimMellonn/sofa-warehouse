@@ -24,5 +24,5 @@
 - [x] dashboard page
 - [ ] make mobile friendly
 - [x] remove selected drinks and ingredients from select lists
-- [ ] fix update event datetime
+- [x] fix update event datetime
 - [ ] better registering of sales

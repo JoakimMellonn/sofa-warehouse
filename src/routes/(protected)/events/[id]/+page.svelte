@@ -26,6 +26,8 @@
 		dataType: 'json',
 		onSubmit: () => {
 			loading = true;
+			console.log($proxyDate);
+			console.log($form);
 		},
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
@@ -465,7 +467,7 @@
 					type="datetime-local"
 					class="col-span-3"
 					{...constraints}
-					value={$proxyDate}
+					bind:value={$proxyDate}
 				/>
 				<Label for="location" class="text-right">Location</Label>
 				<Input
